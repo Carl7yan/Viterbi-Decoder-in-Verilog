@@ -34,48 +34,65 @@ module bACS_213 (acs_ppm_out, acs_Bx_out,
    reg [`W-1:0]    sumb;   
 
 
+always @* begin
+  suma = acs_ppm_ina + HD_ina;
+end
+//always @(posedge clock or posedge reset)
+//   begin
+//      if (reset)
+//        suma <=0;
+//      else
+//	begin
+//           if (ae && acs_ppm_ina==4'b1111)
+//	     suma <= acs_ppm_ina;
+//           else if (ae)
+//             suma <= acs_ppm_ina + HD_ina;
+//	end
+//   end
 
-always @(posedge clock or posedge reset)
-   begin
-      if (reset)
-        suma <=0;
-      else
-	begin
-           if (ae && acs_ppm_ina==4'b1111)
-	     suma <= acs_ppm_ina;
-           else if (ae)
-             suma <= acs_ppm_ina + HD_ina;
-	end
-   end
-
-always @(posedge clock or posedge reset)
-   begin
-      if (reset)
-         sumb <=0;
-      else
-	begin
-           if (ae && acs_ppm_inb ==4'b1111)
-	     sumb <=acs_ppm_inb;
-	   else if (ae)
-             sumb <= acs_ppm_inb + HD_inb;
-	end
-   end
+always @* begin
+  sumb = acs_ppm_inb + HD_inb;
+end
+//always @(posedge clock or posedge reset)
+//   begin
+//      if (reset)
+//         sumb <=0;
+//      else
+//	begin
+//           if (ae && acs_ppm_inb ==4'b1111)
+//	     sumb <=acs_ppm_inb;
+//	   else if (ae)
+//             sumb <= acs_ppm_inb + HD_inb;
+//	end
+//   end
 
 
-
-always @(suma or sumb)
-   begin 
-      if (suma <=sumb && ae)
-         begin
-            acs_ppm_out =suma;
-            acs_Bx_out  =1'b0; //Select Upper Backward Path
-         end
-      else
-         begin
-            acs_ppm_out =sumb;
-            acs_Bx_out  =1'b1; //Select Lower Backward Path
-         end
-   end
+always @(posedge clock or posedge reset) begin
+  if(reset)
+    {acs_ppm_out, acs_Bx_out} <= 0;
+  else begin
+    if(suma<=sumb && ae) begin
+      acs_ppm_out <= suma;
+      acs_Bx_out <= 1'b0;
+    end if(suma>=sumb && ae) begin
+      acs_ppm_out <= sumb;
+      acs_Bx_out <= 1'b1;
+    end
+  end
+end
+//always @(suma or sumb)
+//   begin 
+//      if (suma <=sumb && ae)
+//         begin
+//            acs_ppm_out =suma;
+//            acs_Bx_out  =1'b0; //Select Upper Backward Path
+//         end
+//      else
+//         begin
+//            acs_ppm_out =sumb;
+//            acs_Bx_out  =1'b1; //Select Lower Backward Path
+//         end
+//   end
    
 
 
